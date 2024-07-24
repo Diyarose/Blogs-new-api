@@ -76,6 +76,27 @@ app.post("/add",async(req,res)=>{
     })
 })
 
+app.post("/viewall",(req,res)=>{
+
+    let token=req.headers.token
+    jwt.verify(token,"blog-app",(error,decoded)=>{
+        if(decoded && decoded.email){
+            postModel.find().then(
+                (items)=>{
+                    res.json(items)
+                }
+            ).catch(
+                (error)=>{
+                    res.json({"status":"error"})
+                }
+            )
+        }
+        else{
+            res.json({"status":"Invalid Authentication"})
+        }
+    })
+})
+
 
 
 app.listen(8080,()=>{
