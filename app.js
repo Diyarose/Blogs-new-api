@@ -4,6 +4,7 @@ const cors=require("cors")
 const {registermodel}=require("./models/register")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
+const postModel = require("./models/post")
 
 const generateHashedPassword=async(password)=>{
     const salt=await bcrypt.genSalt(10)
@@ -56,6 +57,27 @@ app.post("/login",(req,res)=>{
             ).catch()
             
 })
+
+app.post("/add",async(req,res)=>{
+    let input=req.body
+
+    let token=req.headers.token
+
+    jwt.verify(token,"blog-app",async(error,decoded)=>{
+        if(decoded && decoded.email){
+            let result=new postModel(input)
+            await result.save()
+            res.json({"status":"success"})
+        }
+        else
+        {
+            res.json({"status":"Invalid Authentication"})
+        }
+    })
+})
+
+
+
 app.listen(8080,()=>{
     console.log("Server started")
 })
